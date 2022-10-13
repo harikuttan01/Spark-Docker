@@ -1,0 +1,17 @@
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+22/10/13 11:22:40 INFO Master: Started daemon with process name: 7@spark-master-555dd6c49d-rtbmx
+22/10/13 11:22:40 INFO SignalUtils: Registered signal handler for TERM
+22/10/13 11:22:40 INFO SignalUtils: Registered signal handler for HUP
+22/10/13 11:22:40 INFO SignalUtils: Registered signal handler for INT
+22/10/13 11:22:41 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[main,5,main]
+java.lang.NumberFormatException: For input string: "tcp://10.111.5.75:8080"
+        at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+        at java.lang.Integer.parseInt(Integer.java:580)
+        at java.lang.Integer.parseInt(Integer.java:615)
+        at scala.collection.immutable.StringLike.toInt(StringLike.scala:304)
+        at scala.collection.immutable.StringLike.toInt$(StringLike.scala:304)
+        at scala.collection.immutable.StringOps.toInt(StringOps.scala:33)
+        at org.apache.spark.deploy.master.MasterArguments.<init>(MasterArguments.scala:46)
+        at org.apache.spark.deploy.master.Master$.main(Master.scala:1121)
+        at org.apache.spark.deploy.master.Master.main(Master.scala)
+22/10/13 11:22:41 INFO ShutdownHookManager: Shutdown hook called

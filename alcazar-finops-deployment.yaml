@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\Spark&Docker\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: alcazar-finops
+  name: alcazar-finops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: alcazar-finops
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\Spark&Docker\kompose.exe convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: alcazar-finops
+    spec:
+      containers:
+        - image: hareendranvr/alcazar-finops
+          name: alcazar-finops
+          ports:
+            - containerPort: 80
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: shared-workspace
+      restartPolicy: Always
+      volumes:
+        - name: shared-workspace
+          persistentVolumeClaim:
+            claimName: shared-workspace
+status: {}

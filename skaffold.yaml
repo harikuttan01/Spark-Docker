@@ -1,0 +1,18 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: spark-docker
+deploy:
+  kubectl:
+    manifests:
+    - alcazar-finops-deployment.yaml
+    - alcazar-finops-service.yaml
+    - jupyterlab-deployment.yaml
+    - jupyterlab-service.yaml
+    - notsparkmaster-deployment.yaml
+    - notsparkmaster-service.yaml
+    - shared-workspace-persistentvolumeclaim.yaml
+    - spark-worker-1-deployment.yaml
+    - spark-worker-1-service.yaml
+    - spark-worker-2-deployment.yaml
+    - spark-worker-2-service.yaml
