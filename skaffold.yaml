@@ -9,9 +9,9 @@ deploy:
     - alcazar-finops-service.yaml
     - jupyterlab-deployment.yaml
     - jupyterlab-service.yaml
-    - notsparkmaster-deployment.yaml
-    - notsparkmaster-service.yaml
     - shared-workspace-persistentvolumeclaim.yaml
+    - spark-master-deployment.yaml
+    - spark-master-service.yaml
     - spark-worker-1-deployment.yaml
     - spark-worker-1-service.yaml
     - spark-worker-2-deployment.yaml

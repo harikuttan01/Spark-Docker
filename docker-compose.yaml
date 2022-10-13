@@ -20,7 +20,7 @@ services:
       - shared-workspace:/opt/workspace
   spark-master:
     image: hareendranvr/notsparkmaster
-    container_name: notsparkmaster
+    container_name: spark-master
     ports:
       - 8080:8080
       - 7077:7077
