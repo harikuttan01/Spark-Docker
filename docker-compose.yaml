@@ -4,6 +4,20 @@ volumes:
     name: "hadoop-distributed-file-system"
     driver: local
 services:
+  # canvas-eureka:
+  #   image: hareendranvr/canvas-eureka
+  #   container_name: canvas-eureka
+  #   ports:
+  #     - 5555:80
+  #   volumes:
+  #     - shared-workspace:/opt/workspace
+  # alcazar-finops:
+  #   image: hareendranvr/alcazar-finops
+  #   container_name: alcazar-finops
+  #   ports:
+  #     - 5000:80
+  #   volumes:
+  #     - shared-workspace:/opt/workspace
   jupyterlab:
     image: hareendranvr/jupyterlab
     container_name: jupyterlab
@@ -11,16 +25,11 @@ services:
       - 8888:8888
     volumes:
       - shared-workspace:/opt/workspace
-  alcazar-finops:
-    image: hareendranvr/alcazar-finops
-    container_name: alcazar-finops
-    ports:
-      - 5000:80
-    volumes:
-      - shared-workspace:/opt/workspace
-  spark-master:
-    image: hareendranvr/notsparkmaster
+  spark-hdfs:
+    image: hareendranvr/spark-master
     container_name: spark-master
+    environment:
+      - SPARK_CLUSTER_URL="spark://192.168.1.106:7077"
     ports:
       - 8080:8080
       - 7077:7077
@@ -37,7 +46,7 @@ services:
     volumes:
       - shared-workspace:/opt/workspace
     depends_on:
-      - spark-master
+      - spark-hdfs
   spark-worker-2:
     image: hareendranvr/spark-worker
     container_name: spark-worker-2
@@ -49,4 +58,4 @@ services:
     volumes:
       - shared-workspace:/opt/workspace
     depends_on:
-      - spark-master
+      - spark-hdfs
