@@ -1,0 +1,13 @@
+version: "3.6"
+volumes:
+  shared-workspace:
+    name: "hadoop-distributed-file-system"
+    driver: local
+services:
+  canvas-eureka:
+    image: hareendranvr/canvas-eureka
+    container_name: canvas-eureka
+    ports:
+      - 5555:80
+    volumes:
+      - shared-workspace:/opt/workspace
