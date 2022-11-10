@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-worker
+  labels:
+    app.kubernetes.io/name: spark-3.2.1-worker
+    app.kubernetes.io/instance: spark-worker
+    app.kubernetes.io/version: 0.0.4
+    app.kubernetes.io/managed-by: kubernetes-standalone-cluster
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spark-3.2.1-worker
+  template:
+    metadata:
+      labels:
+        app: spark-3.2.1-worker
+    spec:
+      containers:            
+        - name: spark-worker
+          image: hareendranvr/spark-worker
+          resources: {}
+          env:
+            - name: SPARK_MODE
+              value: worker
+            - name: TERM
+              value: xterm
+            - name: SPARK_MASTER_HOST
+              value: "10.1.1.91"
+            - name: SPARK_MASTER_PORT
+              value: "7077"
+            - name: SPARK_WORKER_MEMORY
+              value: "1g"
+            - name: SPARK_WORKER_CORES
+              value: "1"
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: spark-pvc
+      restartPolicy: Always
+      volumes:
+        - name: spark-pvc
+          persistentVolumeClaim:
+            claimName: spark-pvc
+                

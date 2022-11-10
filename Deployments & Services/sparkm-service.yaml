@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: D:\Spark&Docker\Dockerfiles\Deployments & Services\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sparkm
+  name: sparkm
+spec:
+  type: NodePort
+  ports:
+    - name: "8080"
+      port: 8080
+      nodePort: 30101
+      targetPort: 8080
+    - name: "7077"
+      port: 7077
+      nodePort: 30001
+      targetPort: 7077
+  selector:
+    io.kompose.service: sparkm
+status:
+  loadBalancer: {}

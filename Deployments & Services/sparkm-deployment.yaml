@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\Spark&Docker\Dockerfiles\Deployments & Services\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sparkm
+  name: sparkm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sparkm
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\Spark&Docker\Dockerfiles\Deployments & Services\kompose.exe convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: sparkm
+    spec:
+      containers:
+        - env:
+            - name: SPARK_CLUSTER_URL
+              value: spark://192.168.1.4:7077
+            - name: SPARK_DRIVER_MEMORY
+              value: 2g
+            - name: SPARK_MASTER_HOST
+              value: 127.0.0.1
+            - name: SPARK_WORKER_MEMORY
+              value: 2g
+          image: hareendranvr/spark-master
+          name: sparkm
+          ports:
+            - containerPort: 8080
+            - containerPort: 7077
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: shared-workspace
+      restartPolicy: Always
+      volumes:
+        - name: shared-workspace
+          persistentVolumeClaim:
+            claimName: shared-workspace
+status: {}

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\Spark&Docker\Dockerfiles\Deployments & Services\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jupyterlab
+  name: jupyterlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: jupyterlab
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\Spark&Docker\Dockerfiles\Deployments & Services\kompose.exe convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: jupyterlab
+    spec:
+      containers:
+        - image: hareendranvr/jupyterlab
+          name: jupyterlab
+          ports:
+            - containerPort: 8888
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: shared-workspace
+      restartPolicy: Always
+      volumes:
+        - name: shared-workspace
+          persistentVolumeClaim:
+            claimName: shared-workspace
+status: {}

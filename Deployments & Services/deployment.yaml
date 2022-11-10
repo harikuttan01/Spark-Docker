@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sparked
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: spark-3.2.1
+    app.kubernetes.io/instance: sparked
+  ports:
+    - name: service
+      protocol: TCP
+      port: 80
+      targetPort: service-port
+    - name: spark-master
+      protocol: TCP
+      port: 8080
+      targetPort: spark-ui-port
+    - name: spark-worker
+      protocol: TCP
+      port: 7077
+      targetPort: spark-wkr-port
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparked
+  labels:
+    app.kubernetes.io/name: spark-3.2.1
+    app.kubernetes.io/instance: sparked
+    app.kubernetes.io/version: 0.0.4
+    app.kubernetes.io/managed-by: kubernetes-standalone-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-3.2.1-driver
+  template:
+    metadata:
+      labels:
+        app: spark-3.2.1-driver
+    spec:
+      containers:
+        - name: sparked
+          image: hareendranvr/spark-master
+          ports:
+            - containerPort: 80
+              name: service-port
+            - containerPort: 8080
+              name: spark-ui-port
+            - containerPort: 7077
+              name: spark-wkr-port
+          resources:
+            requests:
+              cpu: "2"
+              memory: "8Gi"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+          env:
+            - name: SPARK_MASTER_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: LOG_PATH
+              value: /var/log/$(SPARK_MASTER_HOST)/logs
+            - name: SPARK_MASTER_PORT
+              value: "7077"
+            - name: SPARK_MODE
+              value: driver
+            - name: TERM
+              value: xterm
+            - name: SPARK_DRIVER_MEMORY
+              value: 2g
+            - name: SPARK_WORKER_MEMORY
+              value: 2g
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: spark-pvc
+      restartPolicy: Always
+      volumes:
+        - name: spark-pvc
+          persistentVolumeClaim:
+            claimName: spark-pvc

@@ -1,9 +1,11 @@
-FROM hareendranvr/spark-base-2
+FROM hareendranvr/spark-base
 
+WORKDIR /home
 # -- Runtime
-
+RUN apt-get install -y pip &&\
+    apt-get install -y python3 && \
+RUN pip install pyspark
 ARG spark_master_web_ui=8080
-ARG SPARK_MASTER_HOST=192.168.246.87
-
+COPY connect.py ./
 EXPOSE ${spark_master_web_ui} ${SPARK_MASTER_PORT}
-CMD bin/spark-class org.apache.spark.deploy.master.Master >> logs/spark-master.out
+CMD ["python","./connect.py"]

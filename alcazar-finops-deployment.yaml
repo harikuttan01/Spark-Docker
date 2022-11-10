@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\Spark&Docker\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  labels:
+    io.kompose.service: alcazar-finops
+  name: alcazar-finops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: alcazar-finops
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\Spark&Docker\kompose.exe convert
+        kompose.version: 1.26.0 (40646f47)
+      labels:
+        io.kompose.service: alcazar-finops
+    spec:
+      containers:
+        - image: hareendranvr/alcazar-finops
+          name: alcazar-finops
+          ports:
+            - containerPort: 80
+          resources: {}
+          env:
+            - name: "SPARK_MASTER_HOST"
+              value: "10.1.1.91"
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: spark-pvc
+      restartPolicy: Always
+      volumes:
+        - name: spark-pvc
+          persistentVolumeClaim:
+            claimName: spark-pvc
+status: {}

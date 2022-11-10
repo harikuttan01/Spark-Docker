@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connect
+  labels:
+    app.kubernetes.io/name: connect
+    app.kubernetes.io/instance: connect
+    app.kubernetes.io/version: 0.0.4
+    app.kubernetes.io/managed-by: kubernetes-standalone-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connect
+  template:
+    metadata:
+      labels:
+        app: connect
+    spec:
+      containers:            
+        - name: connector
+          image: hareendranvr/spark-master-h
+          resources:
+            requests:
+              cpu: "2"
+              memory: "1Gi"
+            limits:
+              cpu: "4"
+              memory: "2Gi"
+          env:
+            - name: SPARK_MASTER_HOST
+              value: "10.1.1.80"
+          volumeMounts:
+            - mountPath: /opt/workspace
+              name: spark-pvc
+      restartPolicy: Always
+      volumes:
+        - name: spark-pvc
+          persistentVolumeClaim:
+            claimName: spark-pvc
