@@ -19,7 +19,7 @@ spec:
     spec:
       containers:            
         - name: connector
-          image: hareendranvr/spark-master-h
+          image: hareendranvr/spark-connect
           resources:
             requests:
               cpu: "2"
@@ -29,7 +29,7 @@ spec:
               memory: "2Gi"
           env:
             - name: SPARK_MASTER_HOST
-              value: "10.1.1.80"
+              value: "10.1.1.124"
           volumeMounts:
             - mountPath: /opt/workspace
               name: spark-pvc

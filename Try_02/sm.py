@@ -1,7 +1,27 @@
+from pyspark import SparkConf
 from pyspark.sql import SparkSession
+import re
 from pyspark.sql.types import *
 from datetime import date
 import os
+
+class SSession:
+    def get_spark_session(self,app_name: str, conf: SparkConf,config):
+        print("Launching Spark Session! ...\n")
+        conf = conf.setMaster("k8s://https://kubernetes.docker.internal:6443")
+        print("this is the k8 master")
+        # session = SparkSession.builder.appName(app_name).config(conf=conf).getOrCreate()
+        for key, value in config.items():
+            conf.set(key, value)
+        session = SparkSession.builder.appName(app_name).config(conf=conf).getOrCreate()
+        return session
+    def session_creator(self):
+        config = {"spark.kubernetes.container.image": "hareendranvr/executor:latest","spark.kubernetes.container.image.pullPolicy": "Never",
+                "spark.executor.instances": 2,
+                "spark.kubernetes.executor.request.cores": 2,}
+        spark = self.get_spark_session("jy-spark-executor", SparkConf(config),config=config)
+        print(spark)
+        return spark
 
 '''
 set DATABRICKS_ADDRESS=https://adb-40310182645720.0.azuredatabricks.net
@@ -19,12 +39,14 @@ os.environ["DATABRICKS_PORT"] = "15001"
 # os.environ["PYSPARK_PYTHON"] = "python3"
 # os.environ["SPARK_HOME"] = r"venv/lib/site-packages/pyspark"
 
-spark = SparkSession.\
-        builder.\
-        appName("pyspark").\
-        master("k8s://https://kubernetes.default.svc.cluster.local").\
-        config("spark.executor.memory", "512m").\
-        getOrCreate()
+# spark = SparkSession.\
+#         builder.\
+#         appName("pyspark").\
+#         master("k8s://https://kubernetes.docker.internal:6443").\
+#         config("spark.executor.memory", "512m").\
+#         getOrCreate()
+s = SSession()
+spark = s.session_creator()
 
 schema = StructType([
     StructField('AirportCode', StringType(), False),
@@ -60,6 +82,3 @@ df_temps.show()
 spark.sql('DROP TABLE demo_temps_table')
 
 
-
-
-#f"spark://{os.environ.get('SPARK_MASTER_HOST')}:7077"

@@ -19,12 +19,14 @@ os.environ["DATABRICKS_PORT"] = "15001"
 # os.environ["PYSPARK_PYTHON"] = "python3"
 # os.environ["SPARK_HOME"] = r"venv/lib/site-packages/pyspark"
 
-spark = SparkSession.\
-        builder.\
-        appName("pyspark").\
-        master("k8s://https://kubernetes.default.svc.cluster.local").\
-        config("spark.executor.memory", "512m").\
-        getOrCreate()
+# spark = SparkSession.\
+#         builder.\
+#         appName("pyspark").\
+#         master("k8s://https://kubernetes.docker.internal:6443").\
+#         config("spark.executor.memory", "512m").\
+#         getOrCreate()
+s = SSession()
+spark = s.session_creator()
 
 schema = StructType([
     StructField('AirportCode', StringType(), False),
