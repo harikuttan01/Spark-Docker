@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: spark-session
-          image: hareendranvr/spark-session
+          image: hareendranvr/driver
           ports:
             - containerPort: 80
               name: service-port

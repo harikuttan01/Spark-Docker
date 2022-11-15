@@ -11,9 +11,9 @@ RUN pip install --upgrade pip
 RUN pip install requests
 RUN pip install pyspark
 
-COPY spark-session.py ./
+COPY sm.py ./
 COPY connect.py ./
 USER mosaic-ai
 
 ENTRYPOINT ["bash", "/entrypoint.sh"]
-CMD ["python", "./spark-session.py"]
+CMD ["python", "./sm.py"]

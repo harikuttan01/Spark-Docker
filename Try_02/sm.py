@@ -16,8 +16,8 @@ class SSession:
         session = SparkSession.builder.appName(app_name).config(conf=conf).getOrCreate()
         return session
     def session_creator(self):
-        config = {"spark.kubernetes.container.image": "hareendranvr/executor:latest","spark.kubernetes.container.image.pullPolicy": "Never",
-                "spark.executor.instances": 2,
+        config = {"spark.kubernetes.container.image": "gradiant/spark:latest-alpine","spark.kubernetes.container.image.pullPolicy": "Always",
+                "spark.executor.instances": 2,"spark.kubernetes.container.image.pullSecrets": "regcred",
                 "spark.kubernetes.executor.request.cores": 2,}
         spark = self.get_spark_session("jy-spark-executor", SparkConf(config),config=config)
         print(spark)
@@ -42,7 +42,7 @@ os.environ["DATABRICKS_PORT"] = "15001"
 # spark = SparkSession.\
 #         builder.\
 #         appName("pyspark").\
-#         master("k8s://https://kubernetes.docker.internal:6443").\
+#         master("k8s://https://kubernetes.default.svc.cluster.local").\
 #         config("spark.executor.memory", "512m").\
 #         getOrCreate()
 s = SSession()

@@ -1,6 +1,6 @@
 import os
 class SparkDistributed:
-    executor_pod_image = "spark:latest"
+    executor_pod_image = "hareendranvr/executor:latest"
     executor_request_cpu =  "2"
     executor_request_memory = "2000M"
     executor_limit_cpu = "2"

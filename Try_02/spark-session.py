@@ -43,7 +43,7 @@ def get_configs():
         # "spark.driver.host": str(SparkDistributed.executor_service_name) + "." + str(SparkDistributed.namespace)
         #                      + ".svc.cluster.local",  # service-name.namespace.svc.cluster.local
         "spark.driver.bindAddress": "0.0.0.0",
-        "spark.jars": "/opt/conda/lib/python3.7/site-packages/pyspark/jars"
+        # "spark.jars": "/opt/conda/lib/python3.7/site-packages/pyspark/jars"
         # https://spark.apache.org/docs/2.4.3/running-on-kubernetes.html -> Configuration
     }
 
@@ -86,7 +86,7 @@ def get_configs():
 
 def get_spark_session(app_name: str, conf: SparkConf):
     print("Launching Spark Session! ...\n")
-    conf = conf.setMaster("k8s://https://kubernetes.default.svc.cluster.local")
+    conf = conf.setMaster("k8s://https://kubernetes.docker.internal:6443")
     print("Spark master is running on k8....\n")
 
     for key, value in config.items():
