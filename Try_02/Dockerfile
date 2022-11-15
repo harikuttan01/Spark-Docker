@@ -10,10 +10,7 @@ ARG shared_workspace=/opt/workspace
 RUN pip install --upgrade pip
 RUN pip install requests
 RUN pip install pyspark
-
 COPY sm.py ./
 COPY connect.py ./
-USER mosaic-ai
 
-ENTRYPOINT ["bash", "/entrypoint.sh"]
 CMD ["python", "./sm.py"]

@@ -1,61 +1,30 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: spark-session
-spec:
-  type: ClusterIP
-  selector:
-    app.kubernetes.io/name: spark-3.2.1
-    app.kubernetes.io/instance: spark-session
-  ports:
-    - name: service
-      protocol: TCP
-      port: 80
-      targetPort: service-port
-    - name: spark-master
-      protocol: TCP
-      port: 8080
-      targetPort: spark-ui-port
-    - name: spark-worker
-      protocol: TCP
-      port: 7077
-      targetPort: spark-wkr-port
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spark-session
+  name: connect
   labels:
-    app.kubernetes.io/name: spark-3.2.1
-    app.kubernetes.io/instance: spark-session
+    app.kubernetes.io/name: connect
+    app.kubernetes.io/instance: connect
     app.kubernetes.io/version: 0.0.4
     app.kubernetes.io/managed-by: kubernetes-standalone-cluster
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spark-3.2.1-driver
+      app: driver
   template:
     metadata:
       labels:
-        app: spark-3.2.1-driver
+        app: driver
     spec:
-      containers:
-        - name: spark-session
-          image: hareendranvr/driver
-          ports:
-            - containerPort: 80
-              name: service-port
-            - containerPort: 8080
-              name: spark-ui-port
-            - containerPort: 7077
-              name: spark-wkr-port
+      containers:            
+        - name: driver
+          image: hareendranvr/spark-driver
           resources: {}
-          volumeMounts:
-            - mountPath: /opt/workspace
-              name: spark-pvc
-      restartPolicy: Always
-      volumes:
-        - name: spark-pvc
-          persistentVolumeClaim:
-            claimName: spark-pvc
+          env:
+            - name: SPARK_DRIVER_URL
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+
+                

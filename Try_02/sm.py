@@ -16,9 +16,11 @@ class SSession:
         session = SparkSession.builder.appName(app_name).config(conf=conf).getOrCreate()
         return session
     def session_creator(self):
-        config = {"spark.kubernetes.container.image": "gradiant/spark:latest-alpine","spark.kubernetes.container.image.pullPolicy": "Always",
+        config = {"spark.kubernetes.container.image": "hareendranvr/executor","spark.kubernetes.container.image.pullPolicy": "Always",
                 "spark.executor.instances": 2,"spark.kubernetes.container.image.pullSecrets": "regcred",
-                "spark.kubernetes.executor.request.cores": 2,}
+                "spark.kubernetes.executor.request.cores": 2,"spark.driver.blockManager.port": "7777",
+        "spark.driver.port": "2222",
+        "spark.driver.bindAddress": "0.0.0.0",}
         spark = self.get_spark_session("jy-spark-executor", SparkConf(config),config=config)
         print(spark)
         return spark

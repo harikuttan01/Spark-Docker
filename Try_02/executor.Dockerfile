@@ -27,8 +27,7 @@ RUN ln -s /opt/conda/lib/python3.7/site-packages/sparkmonitor/listener_2.12.jar 
 # Copying postgresql-42.5.0.jar
 COPY postgresql-42.5.0.jar /opt/conda/lib/python3.7/site-packages/pyspark/jars
 COPY postgresql-42.5.0.jar /opt/spark/jars/
-RUN useradd -ms /bin/bash mosaic-ai -u 1001
-USER mosaic-ai
+
 
 
 
