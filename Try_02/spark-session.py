@@ -25,27 +25,12 @@ def get_memory(memory):
 
 
 def get_configs():
-    regcred = {
-    "apiVersion": "v1",
-    "data": {
-        ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJoYXJlZW5kcmFudnIiLCJwYXNzd29yZCI6Iklic2pAMTIzJCIsImVtYWlsIjoiaGFyZWVuZHJhbi52ckBsbnRpbmZvdGVjaC5jb20iLCJhdXRoIjoiYUdGeVpXVnVaSEpoYm5aeU9rbGljMnBBTVRJekpBPT0ifX19"
-    },
-    "kind": "Secret",
-    "metadata": {
-        "creationTimestamp": "2022-11-14T11:59:07Z",
-        "name": "regcred",
-        "namespace": "default",
-        "resourceVersion": "174396",
-        "uid": "5545c1f8-0de0-4ff2-bb10-ecf0d038a8cc"
-    },
-    "type": "kubernetes.io/dockerconfigjson"
-}
 
     return {
         # "spark.kubernetes.namespace": SparkDistributed.namespace,
         "spark.kubernetes.container.image": SparkDistributed.executor_pod_image,
-        "spark.kubernetes.container.image.pullSecrets": regcred,
-        "spark.kubernetes.container.image.pullPolicy": "Never",
+        "spark.kubernetes.container.image.pullSecrets": "regcred",
+        "spark.kubernetes.container.image.pullPolicy": "Always",
         "spark.executor.instances": SparkDistributed.number_of_executors,
         "spark.kubernetes.executor.request.cores": SparkDistributed.executor_request_cpu,
         "spark.kubernetes.executor.limit.cores": SparkDistributed.executor_limit_cpu,
@@ -55,8 +40,8 @@ def get_configs():
         # At least 500m memory is required.
         "spark.driver.blockManager.port": "7777",
         "spark.driver.port": "2222",
-        # "spark.driver.host": str(SparkDistributed.executor_service_name) + "." + str(SparkDistributed.namespace)
-        #                      + ".svc.cluster.local",  # service-name.namespace.svc.cluster.local
+        "spark.driver.host": str(SparkDistributed.executor_service_name) + "." + str(SparkDistributed.namespace)
+                             + ".svc.cluster.local",  # service-name.namespace.svc.cluster.local
         "spark.driver.bindAddress": "0.0.0.0",
         # "spark.jars": "/opt/conda/lib/python3.7/site-packages/pyspark/jars"
         # https://spark.apache.org/docs/2.4.3/running-on-kubernetes.html -> Configuration
@@ -101,7 +86,7 @@ def get_configs():
 
 def get_spark_session(app_name: str, conf: SparkConf):
     print("Launching Spark Session! ...\n")
-    conf = conf.setMaster("k8s://https://kubernetes.docker.internal:6443")
+    conf = conf.setMaster("k8s://https://kubernetes.default.svc.cluster.local")
     print("Spark master is running on k8....\n")
 
     for key, value in config.items():
@@ -124,3 +109,59 @@ print(spark)
 
 #k8s://https://kubernetes.default.svc.cluster.local
 #k8s://https://kubernetes.docker.internal:6443
+
+'''
+set DATABRICKS_ADDRESS=https://adb-40310182645720.0.azuredatabricks.net
+set DATABRICKS_API_TOKEN=dapi92bd68eed4d4d371efb2ab70d617f672
+set DATABRICKS_CLUSTER_ID=0523-064935-ruesezri
+set DATABRICKS_ORG_ID=40310182645720
+set DATABRICKS_PORT=15001
+'''
+
+os.environ["DATABRICKS_ADDRESS"] = "https://adb-40310182645720.0.azuredatabricks.net"
+os.environ["DATABRICKS_API_TOKEN"] = "dapi92bd68eed4d4d371efb2ab70d617f672"
+os.environ["DATABRICKS_CLUSTER_ID"] = "0523-064935-ruesezri"
+os.environ["DATABRICKS_ORG_ID"] = "40310182645720"
+os.environ["DATABRICKS_PORT"] = "15001"
+# os.environ["PYSPARK_PYTHON"] = "python3"
+# os.environ["SPARK_HOME"] = r"venv/lib/site-packages/pyspark"
+
+# spark = SparkSession.\
+#         builder.\
+#         appName("pyspark").\
+#         master("k8s://https://kubernetes.default.svc.cluster.local").\
+#         config("spark.executor.memory", "512m").\
+#         getOrCreate()
+
+schema = StructType([
+    StructField('AirportCode', StringType(), False),
+    StructField('Date', DateType(), False),
+    StructField('TempHighF', IntegerType(), False),
+    StructField('TempLowF', IntegerType(), False)
+])
+
+data = [
+    [ 'BLI', date(2021, 4, 3), 52, 43],
+    [ 'BLI', date(2021, 4, 2), 50, 38],
+    [ 'BLI', date(2021, 4, 1), 52, 41],
+    [ 'PDX', date(2021, 4, 3), 64, 45],
+    [ 'PDX', date(2021, 4, 2), 61, 41],
+    [ 'PDX', date(2021, 4, 1), 66, 39],
+    [ 'SEA', date(2021, 4, 3), 57, 43],
+    [ 'SEA', date(2021, 4, 2), 54, 39],
+    [ 'SEA', date(2021, 4, 1), 56, 41]
+]
+
+temps = spark.createDataFrame(data, schema)
+
+spark.sql('USE default')
+spark.sql('DROP TABLE IF EXISTS demo_temps_table')
+temps.write.saveAsTable('demo_temps_table')
+
+df_temps = spark.sql("SELECT * FROM demo_temps_table " \
+    "WHERE AirportCode != 'BLI' AND Date > '2021-04-01' " \
+    "GROUP BY AirportCode, Date, TempHighF, TempLowF " \
+    "ORDER BY TempHighF DESC")
+df_temps.show()
+
+spark.sql('DROP TABLE demo_temps_table')
