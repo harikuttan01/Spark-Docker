@@ -4,10 +4,9 @@ metadata:
   annotations:
     kompose.cmd: D:\Spark&Docker\Dockerfiles\Deployments & Services\kompose.exe convert
     kompose.version: 1.26.0 (40646f47)
-  creationTimestamp: null
   labels:
-    io.kompose.service: sparkm
-  name: sparkm
+    io.kompose.service: spark-driver
+  name: spark-driver
 spec:
   type: NodePort
   ports:
@@ -20,6 +19,6 @@ spec:
       nodePort: 30001
       targetPort: 7077
   selector:
-    io.kompose.service: sparkm
+    io.kompose.service: spark-driver
 status:
   loadBalancer: {}
