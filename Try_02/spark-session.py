@@ -8,7 +8,6 @@ from Constants.SparkDistributed import SparkDistributed
 # from Volumes.Volumes import Volumes
 
 
-
 def get_memory(memory):
     try:
         temp = re.compile("([0-9\.]+)([a-zA-Z]+)")
@@ -26,10 +25,26 @@ def get_memory(memory):
 
 
 def get_configs():
+    regcred = {
+    "apiVersion": "v1",
+    "data": {
+        ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJoYXJlZW5kcmFudnIiLCJwYXNzd29yZCI6Iklic2pAMTIzJCIsImVtYWlsIjoiaGFyZWVuZHJhbi52ckBsbnRpbmZvdGVjaC5jb20iLCJhdXRoIjoiYUdGeVpXVnVaSEpoYm5aeU9rbGljMnBBTVRJekpBPT0ifX19"
+    },
+    "kind": "Secret",
+    "metadata": {
+        "creationTimestamp": "2022-11-14T11:59:07Z",
+        "name": "regcred",
+        "namespace": "default",
+        "resourceVersion": "174396",
+        "uid": "5545c1f8-0de0-4ff2-bb10-ecf0d038a8cc"
+    },
+    "type": "kubernetes.io/dockerconfigjson"
+}
+
     return {
         # "spark.kubernetes.namespace": SparkDistributed.namespace,
         "spark.kubernetes.container.image": SparkDistributed.executor_pod_image,
-        "spark.kubernetes.container.image.pullSecrets": "regcred",
+        "spark.kubernetes.container.image.pullSecrets": regcred,
         "spark.kubernetes.container.image.pullPolicy": "Never",
         "spark.executor.instances": SparkDistributed.number_of_executors,
         "spark.kubernetes.executor.request.cores": SparkDistributed.executor_request_cpu,

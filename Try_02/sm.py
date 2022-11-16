@@ -16,6 +16,22 @@ class SSession:
         session = SparkSession.builder.appName(app_name).config(conf=conf).getOrCreate()
         return session
     def session_creator(self):
+        regcred = {
+    "apiVersion": "v1",
+    "data": {
+        ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJoYXJlZW5kcmFudnIiLCJwYXNzd29yZCI6Iklic2pAMTIzJCIsImVtYWlsIjoiaGFyZWVuZHJhbi52ckBsbnRpbmZvdGVjaC5jb20iLCJhdXRoIjoiYUdGeVpXVnVaSEpoYm5aeU9rbGljMnBBTVRJekpBPT0ifX19"
+    },
+    "kind": "Secret",
+    "metadata": {
+        "creationTimestamp": "2022-11-14T11:59:07Z",
+        "name": "regcred",
+        "namespace": "default",
+        "resourceVersion": "174396",
+        "uid": "5545c1f8-0de0-4ff2-bb10-ecf0d038a8cc"
+    },
+    "type": "kubernetes.io/dockerconfigjson"
+}
+
         config = {"spark.kubernetes.container.image": "hareendranvr/executor","spark.kubernetes.container.image.pullPolicy": "Always",
                 "spark.executor.instances": 2,"spark.kubernetes.container.image.pullSecrets": "regcred",
                 "spark.kubernetes.executor.request.cores": 2,"spark.driver.blockManager.port": "7777",

@@ -1,4 +1,7 @@
-FROM gcr.io/lti-coe/pyspark-base
+ARG java_image_tag=11-jre-slim
+
+FROM openjdk:${java_image_tag}
+
 USER root
 WORKDIR /home
 
