@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: testspark
+  name: sk8r
   labels:
-    spark-app-selector: testspark
+    spark-app-selector: sk8r
 spec:
   containers:
-    - name: testspark
+    - name: sk8r
       securityContext:
         runAsUser: 0
       image: hareendranvr/driver
@@ -18,11 +18,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: testspark
+    name: sk8r
 spec:
     clusterIP: "None"
     selector:
-        spark-app-selector: testspark
+        spark-app-selector: sk8r
     ports:
         - name: driver-rpc-port
           protocol: TCP 

@@ -31,11 +31,11 @@ data = [
 ]
 
 temps = spark.createDataFrame(data, schema)
-
+temps.show()
 spark.sql('USE default')
 spark.sql('DROP TABLE IF EXISTS demo_temps_table')
 temps.write.saveAsTable('demo_temps_table')
-
+spark.sql("SHOW TABLES").show()
 df_temps = spark.sql("SELECT * FROM demo_temps_table " \
     "WHERE AirportCode != 'BLI' AND Date > '2021-04-01' " \
     "GROUP BY AirportCode, Date, TempHighF, TempLowF " \

@@ -8,7 +8,8 @@ RUN pip install \
     notebook==6.2.0 \
     ipynb==0.5.1 \
     sparkmonitor==1.1.1 \
-    pyspark==3.1.1 --target=/opt/conda/lib/python3.7/site-packages
+    pyspark==3.1.1 --target=/opt/conda/lib/python3.7/site-packages \
+    pip install wget
 
 ENV PYTHONPATH=:/opt/conda/lib/python3.7/site-packages \
     PATH=$PATH:/opt/conda/lib/python3.7/site-packages:/opt/conda/lib/python3.7/site-packages/bin \
@@ -16,12 +17,6 @@ ENV PYTHONPATH=:/opt/conda/lib/python3.7/site-packages \
     SPARK_CLASSPATH=$SPARK_CLASSPATH:/opt/conda/lib/python3.7/site-packages/pyspark/jars/*
 
 
-ENV SPARK_DRIVER_URL localhost
-
 RUN ln -s /opt/conda/lib/python3.7/site-packages/sparkmonitor/listener_2.12.jar /opt/spark/jars/listener_2.12.jar
-
-# Copying postgresql-42.5.0.jar
-COPY postgresql-42.5.0.jar /opt/conda/lib/python3.7/site-packages/pyspark/jars
-COPY postgresql-42.5.0.jar /opt/spark/jars/
 
 
