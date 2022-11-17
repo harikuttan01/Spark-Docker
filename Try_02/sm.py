@@ -25,28 +25,6 @@ class SSession:
         print(spark)
         return spark
 
-'''
-set DATABRICKS_ADDRESS=https://adb-40310182645720.0.azuredatabricks.net
-set DATABRICKS_API_TOKEN=dapi92bd68eed4d4d371efb2ab70d617f672
-set DATABRICKS_CLUSTER_ID=0523-064935-ruesezri
-set DATABRICKS_ORG_ID=40310182645720
-set DATABRICKS_PORT=15001
-'''
-
-os.environ["DATABRICKS_ADDRESS"] = "https://adb-40310182645720.0.azuredatabricks.net"
-os.environ["DATABRICKS_API_TOKEN"] = "dapi92bd68eed4d4d371efb2ab70d617f672"
-os.environ["DATABRICKS_CLUSTER_ID"] = "0523-064935-ruesezri"
-os.environ["DATABRICKS_ORG_ID"] = "40310182645720"
-os.environ["DATABRICKS_PORT"] = "15001"
-# os.environ["PYSPARK_PYTHON"] = "python3"
-# os.environ["SPARK_HOME"] = r"venv/lib/site-packages/pyspark"
-
-# spark = SparkSession.\
-#         builder.\
-#         appName("pyspark").\
-#         master("k8s://https://kubernetes.default.svc.cluster.local").\
-#         config("spark.executor.memory", "512m").\
-#         getOrCreate()
 s = SSession()
 spark = s.session_creator()
 

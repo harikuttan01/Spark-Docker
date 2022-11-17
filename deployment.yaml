@@ -1,18 +1,53 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: testspark
+  name: sk8r
   labels:
-    spark-app-selector: testspark
+    spark-app-selector: sk8r
 spec:
   containers:
-    - name: testspark
+    - name: sk8r
       securityContext:
         runAsUser: 0
       image: hareendranvr/driver
+      env:
+        - name: executor_pod_image
+          value: hareendranvr/executor
+        - name: executor_request_cpu
+          value: "2"
+        - name: executor_request_memory
+          value: "1g"
+        - name: executor_limit_cpu
+          value: "4"
+        - name: executor_limit_memory
+          value: "8g"
+        - name: number_of_executors
+          value: "2"
+        - name: service_account
+          value: default
+        - name: driver_service_name
+          value: sk8r
+        - name: namespace
+          value: default
       ports:
-        - containerPort: 37771
-      resources: {}
+        - containerPort: 30000
+      resources:
+            requests:
+              cpu: "8"
+              memory: "8Gi"
+            limits:
+              cpu: "10"
+              memory: "8Gi"
+      volumeMounts:
+      - mountPath: /opt/workspace
+        name: spark-pvc
+  restartPolicy: Always
+  imagePullSecrets:
+    - name: canvas-secret
+  volumes:
+    - name: spark-pvc
+      persistentVolumeClaim:
+        claimName: spark-pvc
   serviceAccountName: default
 
 ---
@@ -20,11 +55,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: testspark
+    name: sk8r
 spec:
     clusterIP: "None"
     selector:
-        spark-app-selector: testspark
+        spark-app-selector: sk8r
     ports:
         - name: driver-rpc-port
           protocol: TCP 
