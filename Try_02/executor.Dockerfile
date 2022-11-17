@@ -16,11 +16,6 @@ ENV PYTHONPATH=:/opt/conda/lib/python3.7/site-packages \
     SPARK_CLASSPATH=$SPARK_CLASSPATH:/opt/conda/lib/python3.7/site-packages/pyspark/jars/*
 
 
-ENV SPARK_DRIVER_URL localhost
-
 RUN ln -s /opt/conda/lib/python3.7/site-packages/sparkmonitor/listener_2.12.jar /opt/spark/jars/listener_2.12.jar
-
-
-
 
 
