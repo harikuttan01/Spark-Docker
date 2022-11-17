@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from datetime import date
 import os
+import wget
 from Constants.SparkDistributed import SparkDistributed
 
 class Sk8r:
@@ -54,6 +55,8 @@ schema = StructType([
     StructField('TempLowF', IntegerType(), False)
 ])
 
+
+print(schema)
 data = [
     [ 'BLI', date(2021, 4, 3), 52, 43],
     [ 'BLI', date(2021, 4, 2), 50, 38],
@@ -67,15 +70,20 @@ data = [
 ]
 
 temps = spark.createDataFrame(data, schema)
-
+temps.show()
 spark.sql('USE default')
 spark.sql('DROP TABLE IF EXISTS demo_temps_table')
 temps.write.saveAsTable('demo_temps_table')
-
-df_temps = spark.sql("SELECT * FROM demo_temps_table " \
+spark.sql("SHOW DATABASES").show()
+spark.sql("SHOW TABLES").show()
+df_temps = spark.sql("SELECT AirportCode,TempHighF FROM demo_temps_table " \
     "WHERE AirportCode != 'BLI' AND Date > '2021-04-01' " \
     "GROUP BY AirportCode, Date, TempHighF, TempLowF " \
     "ORDER BY TempHighF DESC")
+
+print("df:",df_temps)
 df_temps.show()
 
-spark.sql('DROP TABLE demo_temps_table')
+# # spark.sql('DROP TABLE demo_temps_table')
+
+
