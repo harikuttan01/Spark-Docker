@@ -13,8 +13,8 @@ class Sk8r:
         return {
             "spark.kubernetes.namespace": SparkDistributed.namespace,
             "spark.kubernetes.container.image": SparkDistributed.executor_pod_image,
-            "spark.kubernetes.container.image.pullSecrets": "canvas-secret",
-            "spark.kubernetes.container.image.pullPolicy": "Always",
+            "spark.kubernetes.container.image.pullSecrets": "regcred",
+            "spark.kubernetes.container.image.pullPolicy": "IfNotPresent",
             "spark.executor.instances": SparkDistributed.number_of_executors,
             "spark.kubernetes.executor.request.cores": SparkDistributed.executor_request_cpu,
             "spark.executor.cores": SparkDistributed.executor_request_cpu,
@@ -24,10 +24,9 @@ class Sk8r:
             "spark.driver.blockManager.port": "7777",
             "spark.driver.port": "2222",
             "spark.driver.host": str(SparkDistributed.driver_service_name) + "." + str(SparkDistributed.namespace)
-                                + ".svc.cluster.local",  # service-name.namespace.svc.cluster.local
+                                + ".svc.cluster.local", 
             "spark.driver.bindAddress": "0.0.0.0",
-            # "spark.jars": "/opt/conda/lib/python3.7/site-packages/pyspark/jars"
-            # https://spark.apache.org/docs/2.4.3/running-on-kubernetes.html -> Configuration
+
         }
 
     def get_spark_session(self,app_name: str, conf: SparkConf,config):
@@ -41,8 +40,6 @@ class Sk8r:
         return session
 
 
-#k8s://https://kubernetes.default.svc.cluster.local
-#k8s://https://kubernetes.docker.internal:6443
 
 s = Sk8r()
 config = s.get_configs()
@@ -71,19 +68,68 @@ data = [
 
 temps = spark.createDataFrame(data, schema)
 temps.show()
+
 spark.sql('USE default')
-spark.sql('DROP TABLE IF EXISTS demo_temps_table')
-temps.write.saveAsTable('demo_temps_table')
+temps.createOrReplaceTempView("temp_view")
+
 spark.sql("SHOW DATABASES").show()
-spark.sql("SHOW TABLES").show()
-df_temps = spark.sql("SELECT AirportCode,TempHighF FROM demo_temps_table " \
+
+df_temps = spark.sql("SELECT * FROM temp_view " \
     "WHERE AirportCode != 'BLI' AND Date > '2021-04-01' " \
     "GROUP BY AirportCode, Date, TempHighF, TempLowF " \
     "ORDER BY TempHighF DESC")
 
+spark.sql("SELECT COUNT(*) FROM temp_view ;").show()
 print("df:",df_temps)
 df_temps.show()
 
-# # spark.sql('DROP TABLE demo_temps_table')
+print("--------------------------------------------------------------------------------------------------------------------------------------------------")
+
+print("Reading from files.....\n")
+dataframe = spark.read.json('nyt2.json')
+
+dataframe.show()
+
+print("Dropping duplicates.....\n")
+dataframe_dropdup = dataframe.dropDuplicates() 
+dataframe_dropdup.show(10)
+
+print("Selecting specific columns without sql.....\n")
+dataframe.select("author", "title", "rank", "price").show(10)
+
+print("Matching entries using values.....\n")
+dataframe [dataframe.author.isin("John Sandford", 
+"Emily Giffin")].show(5)
+
+print("Matching entries with expressions.....\n")
+dataframe.select("author", "title",dataframe.title.like("% THE %")).show(15)
+
+print("Groupby function.....\n")
+dataframe.groupBy("author").count().show(10)
+
+print("Using filters.....\n")
+dataframe.filter(dataframe["title"] == 'THE HOST').show(5)
+
+print("Creating partitions.....\n")
+dataframe.repartition(10).rdd.getNumPartitions()
+
+print("Performing SQL queries.....\n")
+dataframe.createOrReplaceTempView("df")
+spark.sql("select * from df").show(3)
+try:
+    dft = spark.sql("select " \
+        "CASE WHEN description LIKE '%love%' THEN 'Love_Theme' " \
+            "WHEN description LIKE '%hate%' THEN 'Hate_Theme' " \
+                "WHEN description LIKE '%happy%' THEN 'Happiness_Theme' " \
+                    "WHEN description LIKE '%anger%' THEN 'Anger_Theme' " \
+                        "WHEN description LIKE '%horror%' THEN 'Horror_Theme' " \
+                            "WHEN description LIKE '%death%' THEN 'Criminal_Theme' " \
+                                "WHEN description LIKE '%detective%' THEN 'Mystery_Theme' " \
+                                    "ELSE 'Other_Themes' " \
+                                        "END Themes " \
+                                            "from df ")
+    dft.groupBy('Themes').count().show()
+except:
+    pass
 
 
