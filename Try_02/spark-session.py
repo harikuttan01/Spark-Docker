@@ -13,8 +13,8 @@ class Sk8r:
         return {
             "spark.kubernetes.namespace": SparkDistributed.namespace,
             "spark.kubernetes.container.image": SparkDistributed.executor_pod_image,
-            "spark.kubernetes.container.image.pullSecrets": "canvas-secret",
-            "spark.kubernetes.container.image.pullPolicy": "Always",
+            "spark.kubernetes.container.image.pullSecrets": "regcred",
+            "spark.kubernetes.container.image.pullPolicy": "IfNotPresent",
             "spark.executor.instances": SparkDistributed.number_of_executors,
             "spark.kubernetes.executor.request.cores": SparkDistributed.executor_request_cpu,
             "spark.executor.cores": SparkDistributed.executor_request_cpu,
@@ -24,10 +24,9 @@ class Sk8r:
             "spark.driver.blockManager.port": "7777",
             "spark.driver.port": "2222",
             "spark.driver.host": str(SparkDistributed.driver_service_name) + "." + str(SparkDistributed.namespace)
-                                + ".svc.cluster.local",  # service-name.namespace.svc.cluster.local
+                                + ".svc.cluster.local", 
             "spark.driver.bindAddress": "0.0.0.0",
-            # "spark.jars": "/opt/conda/lib/python3.7/site-packages/pyspark/jars"
-            # https://spark.apache.org/docs/2.4.3/running-on-kubernetes.html -> Configuration
+
         }
 
     def get_spark_session(self,app_name: str, conf: SparkConf,config):
@@ -41,8 +40,6 @@ class Sk8r:
         return session
 
 
-#k8s://https://kubernetes.default.svc.cluster.local
-#k8s://https://kubernetes.docker.internal:6443
 
 s = Sk8r()
 config = s.get_configs()
@@ -71,16 +68,17 @@ data = [
 
 temps = spark.createDataFrame(data, schema)
 temps.show()
+
 spark.sql('USE default')
-spark.sql('DROP TABLE IF EXISTS demo_temps_table')
-temps.write.saveAsTable('demo_temps_table')
+temps.createOrReplaceTempView("temp_view")
+
 spark.sql("SHOW DATABASES").show()
-spark.sql("SHOW TABLES").show()
-df_temps = spark.sql("SELECT AirportCode,TempHighF FROM demo_temps_table " \
+
+df_temps = spark.sql("SELECT AirportCode,TempHighF FROM temp_view " \
     "WHERE AirportCode != 'BLI' AND Date > '2021-04-01' " \
     "GROUP BY AirportCode, Date, TempHighF, TempLowF " \
     "ORDER BY TempHighF DESC")
-
+spark.sql("SELECT COUNT(*) FROM temp_view ;").show()
 print("df:",df_temps)
 df_temps.show()
 
