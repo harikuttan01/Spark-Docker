@@ -1,5 +1,7 @@
 FROM python:3.7
 
+WORKDIR /home
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     unixodbc-dev \
     unixodbc \
@@ -25,6 +27,7 @@ RUN pip install --no-cache-dir pyspark==3.1.1 ipynb==0.5.1 kubernetes==9.0.0 wge
 
 RUN mkdir ./Constants
 COPY ./Constants ./Constants
+COPY ./nyt2.json ./
 COPY ./spark-session.py ./
 
 CMD [ "python", "./spark-session.py" ]
