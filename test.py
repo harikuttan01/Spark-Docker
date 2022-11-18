@@ -42,4 +42,51 @@ df_temps = spark.sql("SELECT * FROM demo_temps_table " \
     "ORDER BY TempHighF DESC")
 df_temps.show()
 
-spark.sql('DROP TABLE demo_temps_table')
+print("--------------------------------------------------------------------------------------------------------------------------------------------------")
+
+print("Reading from files.....\n")
+dataframe = spark.read.json('nyt2.json')
+
+dataframe.show()
+
+print("Dropping duplicates.....\n")
+dataframe_dropdup = dataframe.dropDuplicates() 
+dataframe_dropdup.show(10)
+
+print("Selecting specific columns without sql.....\n")
+dataframe.select("author", "title", "rank", "price").show(10)
+
+print("Matching entries using values.....\n")
+dataframe [dataframe.author.isin("John Sandford", 
+"Emily Giffin")].show(5)
+
+print("Matching entries with expressions.....\n")
+dataframe.select("author", "title",dataframe.title.like("% THE %")).show(15)
+
+print("Groupby function.....\n")
+dataframe.groupBy("author").count().show(10)
+
+print("Using filters.....\n")
+dataframe.filter(dataframe["title"] == 'THE HOST').show(5)
+
+print("Creating partitions.....\n")
+dataframe.repartition(10).rdd.getNumPartitions()
+
+print("Performing SQL queries.....\n")
+dataframe.registerTempView("df")
+spark.sql("select * from df").show(3)
+try:
+    dft = spark.sql("select " \
+        "CASE WHEN description LIKE '%love%' THEN 'Love_Theme' " \
+            "WHEN description LIKE '%hate%' THEN 'Hate_Theme' " \
+                "WHEN description LIKE '%happy%' THEN 'Happiness_Theme' " \
+                    "WHEN description LIKE '%anger%' THEN 'Anger_Theme' " \
+                        "WHEN description LIKE '%horror%' THEN 'Horror_Theme' " \
+                            "WHEN description LIKE '%death%' THEN 'Criminal_Theme' " \
+                                "WHEN description LIKE '%detective%' THEN 'Mystery_Theme' " \
+                                    "ELSE 'Other_Themes' " \
+                                        "END Themes " \
+                                            "from df ")
+    dft.groupBy('Themes').count().show()
+except:
+    pass

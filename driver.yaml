@@ -12,7 +12,13 @@ spec:
       image: hareendranvr/driver
       ports:
         - containerPort: 37771
-      resources: {}
+      resources:
+        requests:
+          cpu: "2"
+          memory: "8Gi"
+        limits:
+          cpu: "4"
+          memory: "8Gi"
   serviceAccountName: default
 ---
 apiVersion: v1
@@ -24,11 +30,11 @@ spec:
     selector:
         spark-app-selector: sk8r
     ports:
-        - name: driver-rpc-port
+        - name: spark-driver-port
           protocol: TCP 
-          port: 37771
-          targetPort: 37771
+          port: 2222
+          targetPort: 2222
         - name: blockmanager
           protocol: TCP 
-          port: 37772
-          targetPort: 37772
+          port: 7777
+          targetPort: 7777
