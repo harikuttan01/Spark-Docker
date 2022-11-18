@@ -1,5 +1,7 @@
 FROM itayb/spark:3.1.1-hadoop-3.2.0-aws
 
+WORKDIR /home
+
 RUN mkdir -p /opt/conda/lib/python3.7/site-packages && \
     chmod 777 -R /opt/conda/lib/python3.7/site-packages && \
     ln -s python3.7 /usr/bin/python
@@ -15,6 +17,7 @@ ENV PYTHONPATH=:/opt/conda/lib/python3.7/site-packages \
     CLASSPATH=$CLASSPATH:/opt/conda/lib/python3.7/site-packages/pyspark/jars/* \
     SPARK_CLASSPATH=$SPARK_CLASSPATH:/opt/conda/lib/python3.7/site-packages/pyspark/jars/*
 
+COPY ./nyt2.json ./
 
 RUN ln -s /opt/conda/lib/python3.7/site-packages/sparkmonitor/listener_2.12.jar /opt/spark/jars/listener_2.12.jar
 
