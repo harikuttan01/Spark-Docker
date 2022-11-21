@@ -73,7 +73,7 @@ print("Creating partitions.....\n")
 dataframe.repartition(10).rdd.getNumPartitions()
 
 print("Performing SQL queries.....\n")
-dataframe.registerTempView("df")
+dataframe.createOrReplaceTempView("df")
 spark.sql("select * from df").show(3)
 try:
     dft = spark.sql("select " \
